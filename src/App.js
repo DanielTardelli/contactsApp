@@ -1,23 +1,33 @@
 import logo from './logo.svg';
 import './App.css';
 
+import ContactsModule from './ContactsModule';
+import LoadingScreen from './LoadingScreen'
+import React from 'react';
+
 function App() {
+  const [loading, setLoading] = React.useState(true);
+  const [contacts, setContacts] = React.useState([]);
+
+  if (loading == true) {
+    (async () => {
+      fetch('https://jsonplaceholder.typicode.com/users', {
+        method: "GET",
+      })
+      .then((data) => {
+        return data.json();
+      })
+      .then((res) => {
+        setLoading(false);
+        setContacts(res);
+      })
+    })();
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {loading && <LoadingScreen />}
+      {!loading && <ContactsModule contacts={contacts}/>}
     </div>
   );
 }
